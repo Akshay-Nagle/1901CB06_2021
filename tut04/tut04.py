@@ -50,7 +50,7 @@ def general(index):
         Sheet.title = num
         Sheet.append(cell_data)                                                                     #appending required values in file
         wb.save(route)
-     
+    return
 
 
 #function to generate file by subject
