@@ -18,21 +18,21 @@ def OverallResult(rollNum: str):
     sRow = ["Semester No", 1]
 
     mSEM = 0
-    for ind, line in enumerate(Grad.readlines()):                                                           #loop condition for calculating maximum semester for given rollno
+    for index, line in enumerate(Grad.readlines()):                                                           #loop condition for calculating maximum semester for given rollno
         if line[0] == rollNum:
             mSEM = max(mSEM, int(line[1]))
 
-    for ind, line in enumerate(Name_Roll.readlines()):                                                      #loop condition for appending individual names in name list
-        if ind > 0 and line[0] == rollNum:
+    for index, line in enumerate(Name_Roll.readlines()):                                                      #loop condition for appending individual names in name list
+        if index > 0 and line[0] == rollNum:
             name.append(line[1])
 
     mSEM = mSEM + 1
 
-    for f in range(1, mSEM):                                                                                #loop condition for calculating credits and Tgrade
+    for i in range(1, mSEM):                                                                                #loop condition for calculating credits and Tgrade
         credits, Tgrade = 0, 0
         for index, line in enumerate((csv.reader(Grad))):
             if index > 0 and line[0] == rollNum:  
-                    if (int(line[1]) == f):
+                    if (int(line[1]) == i):
                         credits = credits + int(line[3])
                         finalGrade = asteriskError(line[4].strip()) 
                         Tgrade = Tgrade + (int(line[3]) * gDIC[finalGrade])
