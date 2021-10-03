@@ -94,7 +94,7 @@ def prepSemSheets():
                 nameRow, sRow, semCreds, TCreds, spi, cpi = OverallResult(line[0])
                 sheet.append(["Roll No", line[0]])                                                          #appending required values in the sheet
                 sheet.append(nameRow)
-                sheet.append(["Discipline", str(str(line[0])[4] + str(line[0])[5])])
+                sheet.append(["Discipline", str(str(line[0][4:6]))])
                 sheet.append(sRow)
                 sheet.append(semCreds)
                 sheet.append(spi)
