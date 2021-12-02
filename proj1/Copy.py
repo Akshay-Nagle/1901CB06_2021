@@ -44,16 +44,16 @@ def file():
           return redirect("/")
 
       files = request.files.getlist('files[]')
-      print(f"---files: {files}")
-      print(f"canSendEmails#1: {customUtils.canSendEmails}")
+      #print(f"---files: {files}")
+      #print(f"canSendEmails#1: {customUtils.canSendEmails}")
 
-      print(type(request.form['pos']))
+      #print(type(request.form['pos']))
 
 
       rp = request.form['pos']
       rn = request.form['neg']
 
-      print(f"rp: {rp} | rn {rn}")
+      #print(f"rp: {rp} | rn {rn}")
 
       if '.' in request.form['pos']:
           correctPoints = float(rp).__round__(2)
@@ -69,16 +69,16 @@ def file():
       else: 
          incorrectPoints = customUtils.cachedNm
 
-      print("=============")
-      print(f"{correctPoints}|{incorrectPoints}")
-      print("=============")
+      #print("=============")
+      #print(f"{correctPoints}|{incorrectPoints}")
+      #print("=============")
 
       customUtils.cachedPm = correctPoints
       customUtils.cachedNm = incorrectPoints
 
-      print("-------")
-      print(f"cachedPm: {customUtils.cachedPm}")
-      print("-------")
+      #print("-------")
+      #print(f"cachedPm: {customUtils.cachedPm}")
+      #print("-------")
 
       for file in files:
          if file and allowed_file(file.filename):
@@ -88,32 +88,29 @@ def file():
 
       if "roll wise" in request.form:
          customUtils.canSendEmails = True
-         print(f"canSendEmails#2: {customUtils.canSendEmails}")
+         #print(f"canSendEmails#2: {customUtils.canSendEmails}")
          customUtils.mainFn(correctPoints, incorrectPoints)
          flash('Roll Number Wise Marksheet generated')
 
       if "concise" in request.form:
          customUtils.canSendEmails = True
-         print(f"canSendEmails#3: {customUtils.canSendEmails}")
+         #print(f"canSendEmails#3: {customUtils.canSendEmails}")
          customUtils.callConcise(correctPoints, incorrectPoints)
          flash('Concise Marksheet generated')
 
       if "mail" in request.form:
-          if os.path.exists(customUtils.rootDir):
+          if os.path.exists(customUtils.rootDir) and customUtils.canSendEmails:
              rmMap = customUtils.rollEmailMap
-             print("Printing rolMap")
-
-             for roll in rmMap:
-                 print(roll, rmMap[roll])
+             #print("Printing rolMap")
 
              sendmails(rmMap)
              flash('Mails done')
              customUtils.canSendEmails = False
           else:
-               print("-------------")
-               print("INVALID ENTRY")
-               print("-------------")
-               flash("Please generate result first!")
+               #print("-------------")
+               #print("INVALID ENTRY")
+               #print("-------------")
+               flash("Please generate roll number wise marksheet first!")
 
 
    return redirect('/')
@@ -124,7 +121,7 @@ mail = Mail(app) # instantiate the mail class
 senda = "" # enter your email address here
 app.config['MAIL_SERVER']='stud.iitp.ac.in'
 app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = senda
+app.config['MAIL_USERNAME'] = '' # enter your email here
 app.config['MAIL_PASSWORD'] = '' # enter your password here
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
