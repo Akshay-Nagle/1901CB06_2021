@@ -44,11 +44,6 @@ def file():
           return redirect("/")
 
       files = request.files.getlist('files[]')
-      #print(f"---files: {files}")
-      #print(f"canSendEmails#1: {customUtils.canSendEmails}")
-
-      #print(type(request.form['pos']))
-
 
       rp = request.form['pos']
       rn = request.form['neg']
@@ -69,16 +64,8 @@ def file():
       else: 
          incorrectPoints = customUtils.cachedNm
 
-      #print("=============")
-      #print(f"{correctPoints}|{incorrectPoints}")
-      #print("=============")
-
       customUtils.cachedPm = correctPoints
       customUtils.cachedNm = incorrectPoints
-
-      #print("-------")
-      #print(f"cachedPm: {customUtils.cachedPm}")
-      #print("-------")
 
       for file in files:
          if file and allowed_file(file.filename):
@@ -88,28 +75,22 @@ def file():
 
       if "roll wise" in request.form:
          customUtils.canSendEmails = True
-         #print(f"canSendEmails#2: {customUtils.canSendEmails}")
          customUtils.mainFn(correctPoints, incorrectPoints)
          flash('Roll Number Wise Marksheet generated')
 
       if "concise" in request.form:
          customUtils.canSendEmails = True
-         #print(f"canSendEmails#3: {customUtils.canSendEmails}")
          customUtils.callConcise(correctPoints, incorrectPoints)
          flash('Concise Marksheet generated')
 
       if "mail" in request.form:
           if os.path.exists(customUtils.rootDir) and customUtils.canSendEmails:
              rmMap = customUtils.rollEmailMap
-             #print("Printing rolMap")
 
              sendmails(rmMap)
              flash('Mails done')
              customUtils.canSendEmails = False
           else:
-               #print("-------------")
-               #print("INVALID ENTRY")
-               #print("-------------")
                flash("Please generate roll number wise marksheet first!")
 
 
@@ -130,8 +111,7 @@ mail = Mail(app)
 # message object mapped to a particular URL ‘/’
 @app.route("/")
 def sendmails(rollMailMap):
-    ansDir = os.path.join(os.getcwd(), "ans")
-    resultDir = os.path.join(ansDir, "result")
+    resultDir = os.path.join(os.getcwd(), "marksheets")
     for key in rollMailMap:
         msg = Message("Quiz Result Out", sender=senda, recipients=[rollMailMap[key]])
         msg.body = f"Dear Student,\nCSXXX 20XX recent paper marks are attached for reference.\n+{correctPoints} Correct, -{incorrectPoints} for wrong."

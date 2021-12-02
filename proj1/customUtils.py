@@ -17,8 +17,7 @@ baseDir = os.path.join(pwd, "assets")
 uploadDir = os.path.join(pwd, "uploads")
 fle = os.path.join(uploadDir, "responses.csv")
 master = os.path.join(uploadDir, "master_roll.csv")
-rootDir = os.path.join(pwd, "ans")
-ansDir = os.path.join(rootDir, "result")
+ansDir = os.path.join(pwd, "marksheets")
 
 absentNameRollMap, concMs, styless = {}, {}, {}
 canSendEmails = False
@@ -57,7 +56,6 @@ def getStyle(style):
         if style != "ltitle" and style != "rtitle":
             baseStyle.border = Border(bd, bd, bd, bd)
         styless[style] = baseStyle
-    # print(f"styless: {styless}")
     return styless[style]
 
 
@@ -206,7 +204,6 @@ def prepareResultForPresentStudents() -> bool:
                 for _ in line[7:]:
                     ans.append(_.strip())
             else:
-                print("fy")
                 return False
         fileName = os.path.join(ansDir, line[6] + ".xlsx")
         if index > 1:
@@ -215,17 +212,15 @@ def prepareResultForPresentStudents() -> bool:
 
 def processLeft():
     files = os.listdir(ansDir)
-    print("_______________________")
     for index, conts in enumerate(csv.reader(open(master))):
         if index > 1:
             if f"{conts[0].upper()}.xlsx" not in files:
-                print(f"noo, not found: {conts[0].upper()}")
                 absentNameRollMap[conts[0]] = conts[1]
                 prepareQuizResult(conts[0], absent=True)
 
 
 def prepareConciseMarksheet():
-    concMsFile = os.path.join(rootDir, "concise_marksheet.csv")
+    concMsFile = os.path.join(ansDir, "concise_marksheet.csv")
     lst = ""
     for ind in range(cors + left + wrong):
         lst += f"Unnamed {ind + 7},"
@@ -240,7 +235,7 @@ def prepareConciseMarksheet():
 
 
 def archiveRes():
-    shutil.make_archive("result", "zip", rootDir)
+    shutil.make_archive("result", "zip", pwd)
     return True
 
 
@@ -251,13 +246,9 @@ def mainFn(cpts, incPts):
     response = prepareResultForPresentStudents()
     if response:
         rollWiseDone = True
-        # processLeft()
-        # prepareConciseMarksheet()
-        # archiveRes()
-        # print(os.listdir(ansDir))
     else:
-        return false
-        print("fy and grow up")
+        return False
+
 
 def callConcise(cpts, incPts):
     if not rollWiseDone:
