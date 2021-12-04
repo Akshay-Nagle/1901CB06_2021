@@ -19,6 +19,19 @@ app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024
 
 # file Upload
 UPLOAD_FOLDER = os.path.join(path, 'uploads')
+msDir = os.path.join(path, "marksheets")
+cmsFileName = "concise_marksheet.csv"
+
+if os.path.exists(UPLOAD_FOLDER):
+    shutil.rmtree(UPLOAD_FOLDER)
+os.mkdir(UPLOAD_FOLDER)
+
+cmsFilePath = os.path.join(msDir, cmsFileName)
+print(f"cmsFilePath {cmsFilePath}")
+
+if os.path.exists(cmsFilePath):
+    print(f"removing {cmsFilePath}")
+    os.remove(cmsFilePath)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = set(['csv', 'xlsx'])
@@ -29,14 +42,13 @@ def allowed_file(filename):
 def upload_form():
    return render_template('upload.html')
 
-@app.route('/download', methods=['GET', 'POST'])
+@app.route('/download_concise_ms', methods=['GET', 'POST'])
 def push_file():
-   resp = customUtils.archiveRes()
-   if resp:
-      file_path = os.path.join(os.getcwd(), "marksheets.zip")
-      return send_file(file_path, as_attachment=True)
+   print(os.path.join(msDir, cmsFileName))
+   if os.path.exists(cmsFilePath):
+      return send_file(cmsFilePath, as_attachment=True)
    else:
-      flash("Generate Concise Marksheet First")
+      flash("Please Generate Concise Marksheet First")
       return redirect("/")
 
 @app.route('/', methods=['GET','POST'])
@@ -75,11 +87,6 @@ def file():
             pass
         else:
             flash("Please browse all the required files!")
-      #print(f"---files: {files}")
-      #print(f"canSendEmails#1: {customUtils.canSendEmails}")
-
-      #print(type(request.form['pos']))
-
 
       rp = request.form['pos']
       rn = request.form['neg']
@@ -93,7 +100,11 @@ def file():
           if correctPoints < 0:
               correctPoints = correctPoints * -1
       else:
-         correctPoints = customUtils.cachedPm
+          try:
+            correctPoints = customUtils.cachedPm
+          except AttributeError:
+              flash("Please input marks for correct questions!")
+              return redirect('/')
 
       if '.' in request.form['neg']:
           incorrectPoints = float(rn).__round__(2)
@@ -104,7 +115,11 @@ def file():
           if incorrectPoints > 0:
               incorrectPoints = (incorrectPoints * -1)
       else: 
-         incorrectPoints = customUtils.cachedNm
+         try:
+            incorrectPoints = customUtils.cachedNm
+         except AttributeError:
+             flash("Please input the marks for incorrect questions!")
+             return redirect('/')
 
       customUtils.cachedPm = correctPoints
       customUtils.cachedNm = incorrectPoints
@@ -131,9 +146,6 @@ def file():
                 #print("Printing rolMap")
             flash('Concise Marksheet generated')
             # Make directory if "uploads" folder not exists
-            if os.path.exists(UPLOAD_FOLDER):
-                shutil.rmtree(UPLOAD_FOLDER)
-            os.mkdir(UPLOAD_FOLDER)
         else:
             print("-------------")
             print("INVALID ENTRY")
